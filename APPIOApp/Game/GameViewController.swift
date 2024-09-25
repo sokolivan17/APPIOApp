@@ -9,6 +9,7 @@ import UIKit
 
 final class GameViewController: UIViewController {
     
+    private let coreData = CoreDataService.shared
     private let words = ComparedWordsService().comparedWords.words
     private let keyboardView = KeyboardView()
     private let gridView = GridView()
@@ -35,7 +36,7 @@ final class GameViewController: UIViewController {
         setupButtons()
         checkButtonActivity()
         getSelectedKeys()
-        clearGridKeys()
+        getSavedKeys()
     }
 
     private func setupNavigationBar() {
@@ -113,24 +114,60 @@ final class GameViewController: UIViewController {
         }
     }
     
-    private func updateKeysUI(selectedArray: [String], comparedArray: [String]) {
+    private func getSavedKeys() {
+        guard !coreData.getAllItems().isEmpty else { return }
+        
+        let lastItem = coreData.getAllItems().last!
+        
+        if lastItem.isCorrectWord {
+            clearGridKeys()
+            comparedIndex = Int(lastItem.comparedIndex) + 1
+        } else {
+           coreData.getAllItems().forEach {
+                let cellState = BaseCellState(rawValue: $0.cellState)
+                let baseCell = BaseCell(key: $0.key, cellState: cellState!)
+                
+                gridView.gridData[Int($0.insertIndex)][Int($0.selectedIndex)] = baseCell
+            }
+            
+            insertIndex = Int(lastItem.insertIndex)
+            
+            if insertIndex == 0 {
+                isFirstWord = true
+            }
+        }
+    }
+    
+    private func updateKeysUI(selectedArray: [String], comparedArray: [String], isCorrectWord: Bool) {
         guard insertIndex < 6 else { return }
         
-        var comparedIndex: Int?
+        var comparedKeyIndex: Int?
         
         for (selectedIndex, selectedElement) in selectedArray.enumerated() {
             if comparedArray.contains(selectedElement) {
-                comparedIndex = comparedArray.firstIndex(of: selectedElement)
+                comparedKeyIndex = comparedArray.firstIndex(of: selectedElement)
                 
                 for (firstIndex, firstKey) in keyboardView.cellData.enumerated() {
                     for (secondIndex, secondKey) in firstKey.enumerated() {
                         if secondKey.key == selectedElement {
-                            if selectedIndex == comparedIndex {
+                            if selectedIndex == comparedKeyIndex {
                                 keyboardView.cellData[firstIndex][secondIndex].cellState = .correct
                                 gridView.gridData[insertIndex][selectedIndex].cellState = .correct
+                                coreData.createItem(key: selectedElement,
+                                                    state: .correct,
+                                                    insertIndex: insertIndex,
+                                                    selectedIndex: selectedIndex,
+                                                    comparedIndex: comparedIndex,
+                                                    isCorrectWord: isCorrectWord)
                             } else {
                                 keyboardView.cellData[firstIndex][secondIndex].cellState = .wrongPlace
                                 gridView.gridData[insertIndex][selectedIndex].cellState = .wrongPlace
+                                coreData.createItem(key: selectedElement,
+                                                    state: .wrongPlace,
+                                                    insertIndex: insertIndex,
+                                                    selectedIndex: selectedIndex,
+                                                    comparedIndex: comparedIndex,
+                                                    isCorrectWord: isCorrectWord)
                             }
                         }
                     }
@@ -144,6 +181,12 @@ final class GameViewController: UIViewController {
                     }
                 }
                 gridView.gridData[insertIndex][selectedIndex].cellState = .noMatch
+                coreData.createItem(key: selectedElement,
+                                    state: .noMatch,
+                                    insertIndex: insertIndex,
+                                    selectedIndex: selectedIndex,
+                                    comparedIndex: comparedIndex,
+                                    isCorrectWord: isCorrectWord)
             }
             gridView.gridData[insertIndex][selectedIndex].key = selectedElement
         }
@@ -159,6 +202,9 @@ final class GameViewController: UIViewController {
                 gridView.gridData[fristIndex][secondIndex].cellState = .base
             }
         }
+        
+        coreData.deleteAllItemsExceptLast(comparedIndex: comparedIndex)
+        coreData.updateLastItem(insertIndex: insertIndex)
     }
     
     private func checkButtonActivity() {
@@ -188,7 +234,18 @@ final class GameViewController: UIViewController {
     }
     
     @objc private func backButtonTapped() {
-        navigationController?.popViewController(animated: true)
+        if !isFirstWord && !coreData.getAllItems().isEmpty {
+            let welcomeViewController = navigationController?.viewControllers.first as? WelcomeViewController
+            welcomeViewController?.hasSavedGame = true
+            navigationController?.popViewController(animated: true)
+            
+        } else {
+            let welcomeViewController = navigationController?.viewControllers.first as? WelcomeViewController
+            welcomeViewController?.hasSavedGame = false
+            navigationController?.popViewController(animated: true)
+            coreData.deleteAllItems()
+        }
+        
     }
     
     @objc private func clearButtonTapped() {
@@ -203,6 +260,7 @@ final class GameViewController: UIViewController {
             
             if isFirstWord {
                 isFirstWord = false
+                insertIndex = 0
             } else {
                 insertIndex += 1
             }
@@ -220,12 +278,15 @@ final class GameViewController: UIViewController {
             print("comparedArray", comparedArray)
             print("selectedArray", selectedArray)
             
-            updateKeysUI(selectedArray: selectedArray, comparedArray: comparedArray)
+            updateKeysUI(selectedArray: selectedArray, comparedArray: comparedArray, isCorrectWord: isCorrectWord)
             
             if isCorrectWord {
+                DispatchQueue.main.asyncAfter(deadline: .now() + 1) { [weak self] in
+                    self?.clearGridKeys()
+                }
                 comparedIndex += 1
-                clearGridKeys()
             } else if insertIndex == 5 {
+                
                 DispatchQueue.main.asyncAfter(deadline: .now() + 1) { [weak self] in
                     self?.clearGridKeys()
                     self?.showAlert(with: comparedWord)

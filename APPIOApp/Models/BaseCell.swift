@@ -7,7 +7,7 @@
 
 import UIKit
 
-enum BaseCellState {
+enum BaseCellState: String {
     case base
     case correct
     case wrongPlace

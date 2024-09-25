@@ -21,6 +21,8 @@
 		B5479FFE2C9FF15F00421CE8 /* ComparedWordsService.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5479FFD2C9FF15F00421CE8 /* ComparedWordsService.swift */; };
 		B547A0002C9FF35800421CE8 /* words.json in Resources */ = {isa = PBXBuildFile; fileRef = B5479FFF2C9FF35800421CE8 /* words.json */; };
 		B547A0022C9FF37700421CE8 /* Words.swift in Sources */ = {isa = PBXBuildFile; fileRef = B547A0012C9FF37700421CE8 /* Words.swift */; };
+		B5B57E312CA44AA30091A1FC /* CoreDataService.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5B57E302CA44AA30091A1FC /* CoreDataService.swift */; };
+		B5B57E352CA44D510091A1FC /* SavedWord+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5B57E332CA44D510091A1FC /* SavedWord+CoreDataProperties.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -40,6 +42,8 @@
 		B5479FFD2C9FF15F00421CE8 /* ComparedWordsService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComparedWordsService.swift; sourceTree = "<group>"; };
 		B5479FFF2C9FF35800421CE8 /* words.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = words.json; sourceTree = "<group>"; };
 		B547A0012C9FF37700421CE8 /* Words.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Words.swift; sourceTree = "<group>"; };
+		B5B57E302CA44AA30091A1FC /* CoreDataService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreDataService.swift; sourceTree = "<group>"; };
+		B5B57E332CA44D510091A1FC /* SavedWord+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SavedWord+CoreDataProperties.swift"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -125,6 +129,7 @@
 			isa = PBXGroup;
 			children = (
 				B5479FFD2C9FF15F00421CE8 /* ComparedWordsService.swift */,
+				B5B57E302CA44AA30091A1FC /* CoreDataService.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -135,6 +140,7 @@
 				B547A0012C9FF37700421CE8 /* Words.swift */,
 				B5479FF92C9F678400421CE8 /* BaseCell.swift */,
 				B5479FDF2C9D70F700421CE8 /* APPIOApp.xcdatamodeld */,
+				B5B57E332CA44D510091A1FC /* SavedWord+CoreDataProperties.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -214,7 +220,9 @@
 				B5479FDB2C9D70F700421CE8 /* WelcomeViewController.swift in Sources */,
 				B5479FFA2C9F678400421CE8 /* BaseCell.swift in Sources */,
 				B5479FF82C9F500600421CE8 /* GridView.swift in Sources */,
+				B5B57E312CA44AA30091A1FC /* CoreDataService.swift in Sources */,
 				B5479FF62C9F039700421CE8 /* KeyboardView.swift in Sources */,
+				B5B57E352CA44D510091A1FC /* SavedWord+CoreDataProperties.swift in Sources */,
 				B5479FF42C9EAE3200421CE8 /* BaseCollectionViewCell.swift in Sources */,
 				B5479FD72C9D70F700421CE8 /* AppDelegate.swift in Sources */,
 				B5479FFE2C9FF15F00421CE8 /* ComparedWordsService.swift in Sources */,

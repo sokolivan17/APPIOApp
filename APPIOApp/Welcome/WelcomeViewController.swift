@@ -9,10 +9,15 @@ import UIKit
 
 final class WelcomeViewController: UIViewController {
     
+    private let coreData = CoreDataService.shared
     private let startGameButton = UIButton()
     private let continueGameButton = UIButton()
     private var startGameButtonTopConstraint: NSLayoutConstraint?
-    private var hasSavedGame = false
+    var hasSavedGame = false {
+        didSet {
+            updateUIForSavedGame()
+        }
+    }
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -23,7 +28,11 @@ final class WelcomeViewController: UIViewController {
         setupUI()
         updateUIForSavedGame()
     }
-
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        updateUIForSavedGame()
+    }
 
     private func setupUI() {
         startGameButton.setTitle("Начать новую игру", for: .normal)
@@ -78,11 +87,12 @@ final class WelcomeViewController: UIViewController {
     }
     
     @objc private func startButtonTapped() {
+        coreData.deleteAllItems()
         self.navigationController?.pushViewController(GameViewController(), animated: true)
     }
     
     @objc private func continueButtonTapped() {
-        print("Continue Button Tapped")
+        self.navigationController?.pushViewController(GameViewController(), animated: true)
     }
 }
 
