@@ -120,7 +120,6 @@ final class GameViewController: UIViewController {
         let lastItem = coreData.getAllItems().last!
         
         if lastItem.isCorrectWord {
-            clearGridKeys()
             comparedIndex = Int(lastItem.comparedIndex) + 1
         } else {
            coreData.getAllItems().forEach {
@@ -132,9 +131,7 @@ final class GameViewController: UIViewController {
             
             insertIndex = Int(lastItem.insertIndex)
             
-            if insertIndex == 0 {
-                isFirstWord = true
-            }
+            isFirstWord = false
         }
     }
     
@@ -194,7 +191,6 @@ final class GameViewController: UIViewController {
     
     private func clearGridKeys() {
         isFirstWord = true
-        insertIndex = 0
         
         for (fristIndex, firstKey) in gridView.gridData.enumerated() {
             for (secondIndex, _) in firstKey.enumerated() {
@@ -203,7 +199,9 @@ final class GameViewController: UIViewController {
             }
         }
         
-        coreData.deleteAllItemsExceptLast(comparedIndex: comparedIndex)
+        coreData.deleteAllItemsExceptLast(insertIndex: insertIndex)
+        
+        insertIndex = 0
         coreData.updateLastItem(insertIndex: insertIndex)
     }
     
@@ -234,7 +232,7 @@ final class GameViewController: UIViewController {
     }
     
     @objc private func backButtonTapped() {
-        if !isFirstWord && !coreData.getAllItems().isEmpty {
+        if !coreData.getAllItems().isEmpty {
             let welcomeViewController = navigationController?.viewControllers.first as? WelcomeViewController
             welcomeViewController?.hasSavedGame = true
             navigationController?.popViewController(animated: true)

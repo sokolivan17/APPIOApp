@@ -64,16 +64,6 @@ final class CoreDataService {
             return (try? context.fetch(SavedWord.fetchRequest()) as? [SavedWord]) ?? []
         }
     }
-
-    public func deleteItem(item: SavedWord) {
-        context.delete(item)
-
-        do {
-            try context.save()
-        } catch {
-            print("Delete error", error)
-        }
-    }
     
     public func deleteAllItems() {
         let items = getAllItems()
@@ -86,9 +76,9 @@ final class CoreDataService {
         }
     }
     
-    public func deleteAllItemsExceptLast(comparedIndex: Int) {
+    public func deleteAllItemsExceptLast(insertIndex: Int) {
         let items = getAllItems()
-        let deletedItems = items.filter { $0.comparedIndex != Int16(comparedIndex)}
+        let deletedItems = items.filter { $0.insertIndex != Int16(insertIndex)}
         deletedItems.forEach { context.delete($0)}
 
         do {
@@ -100,9 +90,7 @@ final class CoreDataService {
     
     public func updateLastItem(insertIndex: Int) {
         let items = getAllItems()
-        let lastItem = items.last
-        
-        lastItem?.insertIndex = Int16(insertIndex)
+        items.forEach { $0.insertIndex = Int16(insertIndex)}
 
         do {
             try context.save()

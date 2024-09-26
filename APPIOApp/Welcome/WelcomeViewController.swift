@@ -72,12 +72,14 @@ final class WelcomeViewController: UIViewController {
     
     private func updateUIForSavedGame() {
         if hasSavedGame {
+            startGameButtonTopConstraint?.isActive = false
             startGameButtonTopConstraint = startGameButton.topAnchor.constraint(equalTo: view.topAnchor, constant: 412)
             startGameButtonTopConstraint?.isActive = true
-            
+        
             continueGameButton.isHidden = false
             startGameButton.isHidden = false
         } else {
+            startGameButtonTopConstraint?.isActive = false
             startGameButtonTopConstraint = startGameButton.topAnchor.constraint(equalTo: view.topAnchor, constant: 360)
             startGameButtonTopConstraint?.isActive = true
             
