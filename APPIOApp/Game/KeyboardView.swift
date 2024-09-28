@@ -33,6 +33,7 @@ final class KeyboardView: UIView {
         let layout = createKeyboardCollectionViewLayout()
         keyboardCollectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
         keyboardCollectionView.backgroundColor = .black
+        keyboardCollectionView.delaysContentTouches = false
         keyboardCollectionView.delegate = self
         keyboardCollectionView.dataSource = self
         keyboardCollectionView.bounces = false
@@ -144,6 +145,20 @@ extension KeyboardView: UICollectionViewDataSource, UICollectionViewDelegate {
         if selectedKeys.count < 5 {
             selectedKeys.append(selectedKey)
             completion?(selectedKeys)
+        }
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, didHighlightItemAt indexPath: IndexPath) {
+        if selectedKeys.count < 5 {
+            if let cell = collectionView.cellForItem(at: indexPath) as? BaseCollectionViewCell {
+                cell.changeCellHighlight()
+            }
+        }
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, didUnhighlightItemAt indexPath: IndexPath) {
+        if let cell = collectionView.cellForItem(at: indexPath) {
+            cell.contentView.backgroundColor = nil
         }
     }
 }

@@ -33,8 +33,8 @@ final class GameViewController: UIViewController {
         setupKeyboardView()
         setupButtons()
         checkButtonActivity()
-        getSelectedKeys()
         getSavedKeys()
+        getSelectedKeys()
     }
 
     private func setupNavigationBar() {
@@ -96,6 +96,7 @@ final class GameViewController: UIViewController {
                                       message: "К сожалению попытки закончились - загаданное слово было \(word), но вы можете сыграть еще раз",
                                       preferredStyle: .alert)
         alert.addAction(UIAlertAction(title: "Выйти из игры", style: .default, handler: { [weak self] _ in
+            self?.coreData.deleteAllItems()
             self?.backButtonTapped()
         }))
         alert.addAction(UIAlertAction(title: "Играть еще раз", style: .cancel, handler: { [weak self] _ in
@@ -109,6 +110,26 @@ final class GameViewController: UIViewController {
         keyboardView.completion = { [weak self] selectedKeys in
             self?.selectedKeys = selectedKeys
             self?.checkButtonActivity()
+            
+            let key = selectedKeys.last!
+            let selectedIndex = selectedKeys.lastIndex(of: key)!
+            self?.showSelectedKeyOnGridView(key: key, selectedIndex: selectedIndex)
+        }
+    }
+    
+    private func showSelectedKeyOnGridView(key: String, selectedIndex: Int) {
+        if coreData.getAllItems().isEmpty {
+            gridView.gridData[gameParameters.insertIndex][selectedIndex].key = key
+        } else if Int(coreData.getAllItems().last!.insertIndex) < 5 {
+            gridView.gridData[gameParameters.insertIndex + 1][selectedIndex].key = key
+        }
+    }
+    
+    private func removeLastKeyOnGridView(keyIndex: Int) {
+        if coreData.getAllItems().isEmpty {
+            gridView.gridData[gameParameters.insertIndex][keyIndex].key = ""
+        } else if Int(coreData.getAllItems().last!.insertIndex) < 5 {
+            gridView.gridData[gameParameters.insertIndex + 1][keyIndex].key = ""
         }
     }
     
@@ -134,6 +155,7 @@ final class GameViewController: UIViewController {
                print("insertIndex \($0.insertIndex) , selectedIndex \($0.selectedIndex) , comparedIndex \($0.comparedIndex) ")
             }
             
+            gameParameters.comparedIndex = Int(lastItem.comparedIndex)
             gameParameters.insertIndex = Int(lastItem.insertIndex)
             gameParameters.isFirstWord = false
         }
@@ -242,8 +264,12 @@ final class GameViewController: UIViewController {
     
     @objc private func clearButtonTapped() {
         if !selectedKeys.isEmpty {
+            let key = selectedKeys.last!
+            let keyIndex = selectedKeys.lastIndex(of: key)!
+            
             selectedKeys.removeLast()
             keyboardView.selectedKeys = selectedKeys
+            removeLastKeyOnGridView(keyIndex: keyIndex)
         }
     }
     

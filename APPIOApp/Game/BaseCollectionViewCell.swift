@@ -50,6 +50,10 @@ final class BaseCollectionViewCell: UICollectionViewCell {
         ])
     }
     
+    public func changeCellHighlight() {
+        containerView.backgroundColor = .white.withAlphaComponent(0.5)
+    }
+    
     public func configure(with keyString: String, keyState: BaseCellState = .base, keyFont: UIFont) {
         keyLabel.text = keyString
         keyLabel.font = keyFont

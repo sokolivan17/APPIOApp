@@ -32,6 +32,7 @@ final class GridView: UIView {
         gridCollectionView.backgroundColor = .black
         gridCollectionView.delegate = self
         gridCollectionView.dataSource = self
+        gridCollectionView.allowsSelection = false
         gridCollectionView.bounces = false
         gridCollectionView.showsVerticalScrollIndicator = false
         gridCollectionView.register(BaseCollectionViewCell.self, forCellWithReuseIdentifier: BaseCollectionViewCell.identifier)
