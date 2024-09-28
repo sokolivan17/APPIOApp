@@ -23,6 +23,7 @@
 		B547A0022C9FF37700421CE8 /* Words.swift in Sources */ = {isa = PBXBuildFile; fileRef = B547A0012C9FF37700421CE8 /* Words.swift */; };
 		B5B57E312CA44AA30091A1FC /* CoreDataService.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5B57E302CA44AA30091A1FC /* CoreDataService.swift */; };
 		B5B57E352CA44D510091A1FC /* SavedWord+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5B57E332CA44D510091A1FC /* SavedWord+CoreDataProperties.swift */; };
+		B5B57E372CA71A380091A1FC /* GameParameters.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5B57E362CA71A380091A1FC /* GameParameters.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -44,6 +45,7 @@
 		B547A0012C9FF37700421CE8 /* Words.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Words.swift; sourceTree = "<group>"; };
 		B5B57E302CA44AA30091A1FC /* CoreDataService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreDataService.swift; sourceTree = "<group>"; };
 		B5B57E332CA44D510091A1FC /* SavedWord+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SavedWord+CoreDataProperties.swift"; sourceTree = "<group>"; };
+		B5B57E362CA71A380091A1FC /* GameParameters.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameParameters.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -113,6 +115,7 @@
 				B5479FF32C9EAE3200421CE8 /* BaseCollectionViewCell.swift */,
 				B5479FF52C9F039700421CE8 /* KeyboardView.swift */,
 				B5479FF72C9F500600421CE8 /* GridView.swift */,
+				B5B57E362CA71A380091A1FC /* GameParameters.swift */,
 			);
 			path = Game;
 			sourceTree = "<group>";
@@ -223,6 +226,7 @@
 				B5B57E312CA44AA30091A1FC /* CoreDataService.swift in Sources */,
 				B5479FF62C9F039700421CE8 /* KeyboardView.swift in Sources */,
 				B5B57E352CA44D510091A1FC /* SavedWord+CoreDataProperties.swift in Sources */,
+				B5B57E372CA71A380091A1FC /* GameParameters.swift in Sources */,
 				B5479FF42C9EAE3200421CE8 /* BaseCollectionViewCell.swift in Sources */,
 				B5479FD72C9D70F700421CE8 /* AppDelegate.swift in Sources */,
 				B5479FFE2C9FF15F00421CE8 /* ComparedWordsService.swift in Sources */,

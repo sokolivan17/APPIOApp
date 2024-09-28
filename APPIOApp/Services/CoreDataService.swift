@@ -27,7 +27,7 @@ final class CoreDataService {
 
     private init() { }
 
-    public func saveContext () {
+    public func saveContext() {
         if context.hasChanges {
             do {
                 try context.save()
@@ -58,6 +58,22 @@ final class CoreDataService {
             print("Create error",error)
         }
     }
+    
+    public func createItem(key: String, state: BaseCellState, gameParameters: GameParameters, selectedIndex: Int) {
+        let newItem = SavedWord(context: context)
+        newItem.key = key
+        newItem.cellState = state.rawValue
+        newItem.insertIndex = Int16(gameParameters.insertIndex)
+        newItem.selectedIndex = Int16(selectedIndex)
+        newItem.comparedIndex = Int16(gameParameters.comparedIndex)
+        newItem.isCorrectWord = gameParameters.isCorrectWord
+
+        do {
+            try context.save()
+        } catch {
+            print("Create error",error)
+        }
+    }
 
     public func getAllItems() -> [SavedWord] {
         do {
@@ -68,29 +84,6 @@ final class CoreDataService {
     public func deleteAllItems() {
         let items = getAllItems()
         items.forEach { context.delete($0)}
-
-        do {
-            try context.save()
-        } catch {
-            print("Delete all items error", error)
-        }
-    }
-    
-    public func deleteAllItemsExceptLast(insertIndex: Int) {
-        let items = getAllItems()
-        let deletedItems = items.filter { $0.insertIndex != Int16(insertIndex)}
-        deletedItems.forEach { context.delete($0)}
-
-        do {
-            try context.save()
-        } catch {
-            print("Delete all items error", error)
-        }
-    }
-    
-    public func updateLastItem(insertIndex: Int) {
-        let items = getAllItems()
-        items.forEach { $0.insertIndex = Int16(insertIndex)}
 
         do {
             try context.save()

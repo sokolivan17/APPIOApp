@@ -15,10 +15,8 @@ final class GameViewController: UIViewController {
     private let gridView = GridView()
     private let clearButton = UIButton()
     private let doneButton = UIButton()
-    private var isFirstWord: Bool = true
-    private var isCorrectWord: Bool = false
-    private var insertIndex: Int = 0
-    private var comparedIndex: Int = 0
+    private var gameParameters = GameParameters()
+    
     private var selectedKeys: [String] = [] {
         didSet {
             checkButtonActivity()
@@ -101,7 +99,7 @@ final class GameViewController: UIViewController {
             self?.backButtonTapped()
         }))
         alert.addAction(UIAlertAction(title: "Играть еще раз", style: .cancel, handler: { [weak self] _ in
-            self?.comparedIndex += 1
+            self?.gameParameters.comparedIndex += 1
         }))
         
         self.present(alert, animated: true)
@@ -120,23 +118,29 @@ final class GameViewController: UIViewController {
         let lastItem = coreData.getAllItems().last!
         
         if lastItem.isCorrectWord {
-            comparedIndex = Int(lastItem.comparedIndex) + 1
+            gameParameters.comparedIndex = Int(lastItem.comparedIndex) + 1
+        } else if lastItem.insertIndex == 5 {
+            gameParameters.comparedIndex = Int(lastItem.comparedIndex) + 1
         } else {
-           coreData.getAllItems().forEach {
+            let filteredItems = coreData.getAllItems().filter { key in
+                key.comparedIndex == lastItem.comparedIndex
+            }
+            
+            filteredItems.forEach {
                 let cellState = BaseCellState(rawValue: $0.cellState)
                 let baseCell = BaseCell(key: $0.key, cellState: cellState!)
                 
                 gridView.gridData[Int($0.insertIndex)][Int($0.selectedIndex)] = baseCell
+               print("insertIndex \($0.insertIndex) , selectedIndex \($0.selectedIndex) , comparedIndex \($0.comparedIndex) ")
             }
             
-            insertIndex = Int(lastItem.insertIndex)
-            
-            isFirstWord = false
+            gameParameters.insertIndex = Int(lastItem.insertIndex)
+            gameParameters.isFirstWord = false
         }
     }
     
     private func updateKeysUI(selectedArray: [String], comparedArray: [String], isCorrectWord: Bool) {
-        guard insertIndex < 6 else { return }
+        guard gameParameters.insertIndex < 6 else { return }
         
         var comparedKeyIndex: Int?
         
@@ -149,22 +153,18 @@ final class GameViewController: UIViewController {
                         if secondKey.key == selectedElement {
                             if selectedIndex == comparedKeyIndex {
                                 keyboardView.cellData[firstIndex][secondIndex].cellState = .correct
-                                gridView.gridData[insertIndex][selectedIndex].cellState = .correct
+                                gridView.gridData[gameParameters.insertIndex][selectedIndex].cellState = .correct
                                 coreData.createItem(key: selectedElement,
                                                     state: .correct,
-                                                    insertIndex: insertIndex,
-                                                    selectedIndex: selectedIndex,
-                                                    comparedIndex: comparedIndex,
-                                                    isCorrectWord: isCorrectWord)
+                                                    gameParameters: gameParameters,
+                                                    selectedIndex: selectedIndex)
                             } else {
                                 keyboardView.cellData[firstIndex][secondIndex].cellState = .wrongPlace
-                                gridView.gridData[insertIndex][selectedIndex].cellState = .wrongPlace
+                                gridView.gridData[gameParameters.insertIndex][selectedIndex].cellState = .wrongPlace
                                 coreData.createItem(key: selectedElement,
                                                     state: .wrongPlace,
-                                                    insertIndex: insertIndex,
-                                                    selectedIndex: selectedIndex,
-                                                    comparedIndex: comparedIndex,
-                                                    isCorrectWord: isCorrectWord)
+                                                    gameParameters: gameParameters,
+                                                    selectedIndex: selectedIndex)
                             }
                         }
                     }
@@ -177,20 +177,18 @@ final class GameViewController: UIViewController {
                         }
                     }
                 }
-                gridView.gridData[insertIndex][selectedIndex].cellState = .noMatch
+                gridView.gridData[gameParameters.insertIndex][selectedIndex].cellState = .noMatch
                 coreData.createItem(key: selectedElement,
                                     state: .noMatch,
-                                    insertIndex: insertIndex,
-                                    selectedIndex: selectedIndex,
-                                    comparedIndex: comparedIndex,
-                                    isCorrectWord: isCorrectWord)
+                                    gameParameters: gameParameters,
+                                    selectedIndex: selectedIndex)
             }
-            gridView.gridData[insertIndex][selectedIndex].key = selectedElement
+            gridView.gridData[gameParameters.insertIndex][selectedIndex].key = selectedElement
         }
     }
     
     private func clearGridKeys() {
-        isFirstWord = true
+        gameParameters.isFirstWord = true
         
         for (fristIndex, firstKey) in gridView.gridData.enumerated() {
             for (secondIndex, _) in firstKey.enumerated() {
@@ -198,11 +196,7 @@ final class GameViewController: UIViewController {
                 gridView.gridData[fristIndex][secondIndex].cellState = .base
             }
         }
-        
-        coreData.deleteAllItemsExceptLast(insertIndex: insertIndex)
-        
-        insertIndex = 0
-        coreData.updateLastItem(insertIndex: insertIndex)
+        gameParameters.insertIndex = 0
     }
     
     private func checkButtonActivity() {
@@ -256,34 +250,36 @@ final class GameViewController: UIViewController {
     @objc private func doneButtonTapped() {
         if selectedKeys.count == 5 {
             
-            if isFirstWord {
-                isFirstWord = false
-                insertIndex = 0
+            if gameParameters.isFirstWord {
+                gameParameters.isFirstWord = false
+                gameParameters.insertIndex = 0
             } else {
-                insertIndex += 1
+                gameParameters.insertIndex += 1
             }
             
             let selectedArray = selectedKeys
-            let comparedWord = words[comparedIndex].uppercased()
+            let comparedWord = words[gameParameters.comparedIndex].uppercased()
             var comparedArray: [String] = []
             
             for key in comparedWord {
                 comparedArray.append(String(key))
             }
             
-            isCorrectWord = selectedArray == comparedArray
+            gameParameters.isCorrectWord = selectedArray == comparedArray
             
             print("comparedArray", comparedArray)
             print("selectedArray", selectedArray)
             
-            updateKeysUI(selectedArray: selectedArray, comparedArray: comparedArray, isCorrectWord: isCorrectWord)
+            updateKeysUI(selectedArray: selectedArray,
+                         comparedArray: comparedArray,
+                         isCorrectWord: gameParameters.isCorrectWord)
             
-            if isCorrectWord {
+            if gameParameters.isCorrectWord {
                 DispatchQueue.main.asyncAfter(deadline: .now() + 1) { [weak self] in
                     self?.clearGridKeys()
                 }
-                comparedIndex += 1
-            } else if insertIndex == 5 {
+                gameParameters.comparedIndex += 1
+            } else if gameParameters.insertIndex == 5 {
                 
                 DispatchQueue.main.asyncAfter(deadline: .now() + 1) { [weak self] in
                     self?.clearGridKeys()
