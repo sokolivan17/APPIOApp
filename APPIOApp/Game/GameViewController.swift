@@ -118,17 +118,17 @@ final class GameViewController: UIViewController {
     }
     
     private func showSelectedKeyOnGridView(key: String, selectedIndex: Int) {
-        if coreData.getAllItems().isEmpty {
+        if gameParameters.isFirstWord {
             gridView.gridData[gameParameters.insertIndex][selectedIndex].key = key
-        } else if Int(coreData.getAllItems().last!.insertIndex) < 5 {
+        } else if Int(coreData.getAllItems().last?.insertIndex ?? 0) < 6 {
             gridView.gridData[gameParameters.insertIndex + 1][selectedIndex].key = key
         }
     }
     
     private func removeLastKeyOnGridView(keyIndex: Int) {
-        if coreData.getAllItems().isEmpty {
+        if gameParameters.isFirstWord {
             gridView.gridData[gameParameters.insertIndex][keyIndex].key = ""
-        } else if Int(coreData.getAllItems().last!.insertIndex) < 5 {
+        } else if Int(coreData.getAllItems().last?.insertIndex ?? 0) < 6 {
             gridView.gridData[gameParameters.insertIndex + 1][keyIndex].key = ""
         }
     }
